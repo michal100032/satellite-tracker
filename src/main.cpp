@@ -1,5 +1,10 @@
-﻿#include <iostream>
+﻿#include "Application.hpp"
 
 int main() {
-	std::cout << "Hello there!!" << std::endl;
+	Application app;
+	while (app.running()) {
+		app.handleEvents();
+		app.update();
+		app.render();
+	}
 }

@@ -1,0 +1,11 @@
+{
+  "name": "satellite-tracker",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "glfw3",
+    "glew",
+    "glm",
+    "stb"
+  ],
+  "builtin-baseline": "638b1588be3a265a9c7ad5b212cef72a1cad336a"
+}
