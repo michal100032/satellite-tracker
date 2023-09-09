@@ -3,6 +3,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Camera.hpp"
+#include "Earth.hpp"
+
 class Application {
 
 public:
@@ -15,9 +18,12 @@ public:
 
 	bool running();
 private:
+	void init();
+	
 	GLFWwindow* m_window = nullptr;
 
 	bool m_isRunning = false;
 
-	void init();
+	Camera m_camera;
+	Earth m_earth;
 };
