@@ -23,7 +23,7 @@ void Earth::loadTexture(const std::string& texturePath) {
 
 void Earth::loadShader(const std::string& vertexPath, const std::string& fragmentPath) {
 	m_shader.load(vertexPath, fragmentPath);
-	m_shader.use();
+
 	m_modelMatrixUniform = glGetUniformLocation(m_shader.id(), "modelMatrix");
 	m_cameraMatrixUniform = glGetUniformLocation(m_shader.id(), "cameraMatrix");
 }

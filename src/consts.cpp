@@ -21,3 +21,7 @@ extern const float CAM_FAR_PLANE = 100.0f;
 extern const char* EARTH_TEXTURE_PATH = "resources/textures/earth_day.jpg";
 extern const char* EARTH_VERTSH_PATH = "resources/shaders/earth.vert";
 extern const char* EARTH_FRAGSH_PATH = "resources/shaders/earth.frag";
+
+extern const int ORB_RESOLUTION = 50;
+extern const char* ORB_VERTSH_PATH = "resources/shaders/line.vert";
+extern const char* ORB_FRAGSH_PATH = "resources/shaders/line.frag";

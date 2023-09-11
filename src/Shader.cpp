@@ -13,6 +13,25 @@ std::string readFile(const std::string& path) {
 	return buffer.str();
 }
 
+
+Shader::Shader() {
+
+}
+
+Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
+	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderPath);
+	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+
+	m_shaderProgram = createProgram(vertexShader, fragmentShader);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+Shader::~Shader() {
+	glDeleteProgram(m_shaderProgram);
+}
+
 GLuint Shader::loadShader(GLuint shaderType, const std::string& path) {
 	std::string shaderSource = readFile(path);
 	const char* shaderS = shaderSource.c_str();
@@ -52,24 +71,6 @@ GLuint Shader::createProgram(GLuint vertexShader, GLuint fragmentShader) {
 		std::cout << "Shader program linking failed" << std::endl << infoLog << std::endl;
 	}
 	return program;
-}
-
-Shader::Shader() {
-
-}
-
-Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
-	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderPath);
-	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
-
-	m_shaderProgram = createProgram(vertexShader, fragmentShader);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
-
-Shader::~Shader() {
-	glDeleteProgram(m_shaderProgram);
 }
 
 void Shader::load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
