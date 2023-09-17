@@ -18,11 +18,3 @@ extern const float CAM_DRAG_SPEED;
 extern const float CAM_FOV;
 extern const float CAM_NEAR_PLANE;
 extern const float CAM_FAR_PLANE;
-
-extern const char* EARTH_TEXTURE_PATH;
-extern const char* EARTH_VERTSH_PATH;
-extern const char* EARTH_FRAGSH_PATH;
-
-extern const int ORB_RESOLUTION;
-extern const char* ORB_VERTSH_PATH;
-extern const char* ORB_FRAGSH_PATH;

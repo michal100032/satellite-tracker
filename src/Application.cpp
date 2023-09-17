@@ -4,14 +4,36 @@
 
 #include <iostream>
 
-Application::Application() : m_orbRenderer(ORB_RESOLUTION), m_orbit(2.0f, 0.2f, 0, PI / 6, 0) {
+#include "Time.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+Application::Application() {
 	init();
 
-	m_earth.loadTexture(EARTH_TEXTURE_PATH);
-	m_earth.loadShader(EARTH_VERTSH_PATH, EARTH_FRAGSH_PATH);
-	
-	m_orbRenderer.loadShader(ORB_VERTSH_PATH, ORB_FRAGSH_PATH);
+	SatelliteInfo info = m_data.load()[18]; // NOAA 18
+
+	m_orbit = info.orbit;
+	printf("Name: %s\n", info.name.c_str());
+	printf("SMA:  %f\n", m_orbit.sma());
+	printf("Ecc:  %f\n", m_orbit.ecc());
+	printf("Aop:  %f\n", m_orbit.aop() * 180 / PI);
+	printf("Raan: %f\n", m_orbit.raan() * 180 / PI);
+	printf("Incl: %f\n", m_orbit.incl() * 180 / PI);
+
+	glfwSetWindowTitle(m_window, ("Satellite tracker | " + info.name).c_str());
+	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double dx, double dy) {
+		Camera::inst().zoom((float)dy);
+	});
+
+	m_earth.loadTexture();
+	m_earth.loadShader();
+
+	m_orbRenderer.loadShader();
 	m_orbRenderer.setOrbit(&m_orbit);
+
 
 	m_isRunning = true;
 }
@@ -32,6 +54,11 @@ void Application::render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_earth.draw();
+
+	glm::vec3 pos = m_orbit.getPosition();
+
+	glm::mat4 matrix = glm::translate(glm::mat4(1.0f), pos);
+	glUniformMatrix4fv(glGetUniformLocation(m_earth.m_shader.id(), "modelMatrix"), 1, GL_FALSE, glm::value_ptr(matrix));
 	m_orbRenderer.draw();
 
 	glfwSwapBuffers(m_window);
@@ -41,7 +68,7 @@ void Application::render() {
 void Application::update() {
 	m_camera.update(m_window);
 	m_camera.updateMatrix();
-
+	m_orbit.update(0.0166);
 	m_earth.update(0.0166f);
 
 	int err = glGetError();

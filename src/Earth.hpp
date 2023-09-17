@@ -13,8 +13,8 @@ class Earth {
 public:
 	Earth();
 
-	void loadTexture(const std::string& texturePath);
-	void loadShader(const std::string& vertexPath, const std::string& fragmentPath);
+	void loadTexture();
+	void loadShader();
 
 	void update(float deltaTime);
 	void draw();
@@ -28,6 +28,9 @@ private:
 
 	GLuint m_modelMatrixUniform = NULL;
 	GLuint m_cameraMatrixUniform = NULL;
+	GLuint m_lightDirUniform = NULL;
 
 	glm::mat4 m_model = glm::mat4(1.0f);
+
+	friend class Application;
 };

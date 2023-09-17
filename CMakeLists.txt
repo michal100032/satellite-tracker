@@ -15,15 +15,27 @@ add_executable (
 	${PROJECT_NAME}
 	"src/main.cpp"
 	"src/Application.cpp"
+	
 	"src/Earth.cpp"
 	"src/Mesh.cpp"
 	"src/Shader.cpp"
 	"src/Texture.cpp"
 	"src/stb.cpp"
 	"src/Camera.cpp"
+
+    "src/Orbit/OrbitData.cpp"
+    "src/Orbit/OrbitRenderer.cpp"
+	"src/Orbit/Orbit.cpp"
+	
 	"src/consts.cpp"
-    "src/Orbit.cpp"
+	"src/Time.cpp"
 )
+
+if (WIN32)
+    target_sources(${PROJECT_NAME}
+        PRIVATE "src/HttpWin.cpp"
+    )
+endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)

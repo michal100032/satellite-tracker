@@ -19,13 +19,11 @@ Shader::Shader() {
 }
 
 Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
-	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderPath);
-	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+	load(vertexShaderPath, fragmentShaderPath);
+}
 
-	m_shaderProgram = createProgram(vertexShader, fragmentShader);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+Shader::Shader(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath) {
+	load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
 }
 
 Shader::~Shader() {
@@ -73,6 +71,25 @@ GLuint Shader::createProgram(GLuint vertexShader, GLuint fragmentShader) {
 	return program;
 }
 
+GLuint Shader::createProgram(GLuint vertexShader, GLuint geometryShader, GLuint fragmentShader) {
+	char infoLog[512];
+	int success;
+
+	GLuint program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, geometryShader);
+	glAttachShader(program, fragmentShader);
+
+	glLinkProgram(program);
+
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(program, 512, NULL, infoLog);
+		std::cout << "Shader program linking failed" << std::endl << infoLog << std::endl;
+	}
+	return program;
+}
+
 void Shader::load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
 	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderPath);
 	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
@@ -80,6 +97,18 @@ void Shader::load(const std::string& vertexShaderPath, const std::string& fragme
 	m_shaderProgram = createProgram(vertexShader, fragmentShader);
 
 	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Shader::load(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath) {
+	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderPath);
+	GLuint geometryShader = loadShader(GL_GEOMETRY_SHADER, geometryShaderPath);
+	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+
+	m_shaderProgram = createProgram(vertexShader, geometryShader, fragmentShader);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(geometryShader);
 	glDeleteShader(fragmentShader);
 }
 

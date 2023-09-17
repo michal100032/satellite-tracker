@@ -18,7 +18,7 @@ Texture::~Texture() {
 
 void Texture::load(const std::string& path) {
 
-	std::cout << path << std::endl;
+	std::cout << "Loading texture from " << path << "..." << std::endl;
 
 	uint8_t* bytes = stbi_load(path.c_str(), &m_width, &m_height, &m_channelCount, 0);
 

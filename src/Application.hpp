@@ -5,7 +5,9 @@
 
 #include "Camera.hpp"
 #include "Earth.hpp"
-#include "Orbit.hpp"
+
+#include "Orbit/OrbitRenderer.hpp"
+#include "Orbit/OrbitData.hpp"
 
 class Application {
 
@@ -30,4 +32,5 @@ private:
 
 	Orbit m_orbit;
 	OrbitRenderer m_orbRenderer;
+	OrbitData m_data;
 };

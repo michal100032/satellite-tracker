@@ -31,8 +31,8 @@ void Mesh::generateSphere(int longitudanalResolution, int latitudinalResolution,
 
 		vertex.textureCoords.y = y / (latitudinalResolution + 1);
 
-		vertex.position.y = sinf(yAngle);
-		float r = cosf(yAngle);
+		vertex.position.y = radius * sinf(yAngle);
+		float r = radius * cosf(yAngle);
 
 		for (float x = 0; x <= longitudanalResolution; x++) {
 			float xAngle = PI * (2.0f * x / (float)longitudanalResolution - 1.0f);
@@ -43,7 +43,6 @@ void Mesh::generateSphere(int longitudanalResolution, int latitudinalResolution,
 			vertex.position.z = r * sinf(xAngle);
 
 			vertex.normal = vertex.position;
-			vertex.position *= radius;
 
 			m_vertices.push_back(vertex);
 		}
