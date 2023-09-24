@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <chrono>
 
 constexpr double SCALE = 1.0 / 6371000.0;
 constexpr double GRAV_PARAM = 3.986004e14f;
@@ -8,11 +9,12 @@ constexpr double GRAV_PARAM = 3.986004e14f;
 class Orbit {
 public:
 	Orbit();
-	Orbit(double sma, double ecc, double raan, double incl, double aop, double ta);
+	Orbit(double sma, double ecc, double raan, double incl, double aop, double ta, std::chrono::utc_clock::time_point time);
 
 	void update(double dt);
 	bool isPrograde();
 	glm::vec3 getPosition();
+	glm::vec3 getPositionAt(std::chrono::utc_clock::time_point time);
 	
 	static double meanFromEccentric(double ea, double ecc);
 	static double eccentricFromTrue(double ta, double ecc);
@@ -45,7 +47,9 @@ private:
 	double m_aop  = 0.0;  // argument of perigee
 	double m_ta   = 0.4;  // true anomaly
 
-	double m_time = 0.0;  // time from perigee
+	std::chrono::utc_clock::time_point m_time;
+	// double m_time = 0.0;  // time from perigee
+	
 	double m_ma   = 0.0;  // mean anomaly
 	double m_slr  = 0.0;
 

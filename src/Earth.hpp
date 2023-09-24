@@ -9,6 +9,8 @@
 #include "Mesh.hpp"
 #include "Shader.hpp"
 
+#include <chrono>
+
 class Earth {
 public:
 	Earth();
@@ -16,7 +18,7 @@ public:
 	void loadTexture();
 	void loadShader();
 
-	void update(float deltaTime);
+	void update(std::chrono::utc_clock::time_point time);
 	void draw();
 
 private:
@@ -31,6 +33,7 @@ private:
 	GLuint m_lightDirUniform = NULL;
 
 	glm::mat4 m_model = glm::mat4(1.0f);
+	glm::vec3 m_lightDir = glm::vec3(0.0f);
 
 	friend class Application;
 };

@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <chrono>
 
 #include "Orbit.hpp"
 #include "../Shader.hpp"
@@ -17,6 +18,7 @@ public:
 
 	void loadShader();
 
+	void update(std::chrono::utc_clock::time_point time);
 	void draw();
 
 	void setOrbit(Orbit* orbit);

@@ -6,7 +6,7 @@ if (POLICY CMP0141)
 endif()
 
 # You may need to set CMAKE_TOOLCHAIN_FILE
-# set(CMAKE_TOOLCHAIN_FILE "<path to vcpkg>/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
+# set(CMAKE_TOOLCHAIN_FILE "<path to vcpgk>/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain file")
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resources" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -29,6 +29,7 @@ add_executable (
 	
 	"src/consts.cpp"
 	"src/Time.cpp"
+	"src/ControlPanel.cpp"
 )
 
 if (WIN32)
@@ -44,6 +45,7 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(Stb REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm::glm GLEW::GLEW imgui::imgui)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})

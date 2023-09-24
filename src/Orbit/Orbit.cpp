@@ -1,29 +1,46 @@
 #include "Orbit.hpp"
 
 #include <cmath>
+#include <chrono>
+#include <iostream>
 
 #include "../consts.hpp"
 
 Orbit::Orbit() { }
 
-Orbit::Orbit(double sma, double ecc, double raan, double incl, double aop, double ta) :
+Orbit::Orbit(double sma, double ecc, double raan, double incl, double aop, double ta, std::chrono::utc_clock::time_point time) :
 	m_sma(sma), m_ecc(ecc), m_raan(raan), m_incl(incl), m_aop(aop), 
-	m_ta(ta), m_slr(sma * (1 - ecc * ecc)) {
+	m_ta(ta), m_slr(sma * (1 - ecc * ecc)), m_time(time) {
 
 	calculateMatrix();
 	m_ma = meanFromTrue(m_ta, m_ecc);
 	m_meanAngular = sqrt(GRAV_PARAM / (m_sma * m_sma * m_sma));
-	m_time = m_ma / m_meanAngular;
 }
 
 void Orbit::update(double dt) {
-	m_time += dt;
-	m_ma = m_time * m_meanAngular;
-	m_ta = trueFromMean(-m_ma, m_ecc);
+
 }
 
 bool Orbit::isPrograde() {
 	return m_incl > PI / 2;
+}
+
+glm::vec3 Orbit::getPositionAt(std::chrono::utc_clock::time_point time) {
+	std::chrono::utc_clock::duration duration = time - m_time;
+	double secs = std::chrono::duration<double>(duration).count();
+
+	double ma = secs * m_meanAngular + m_ma;
+	float ta = (float)trueFromMean(-ma, m_ecc);
+
+	float distance = m_slr / (1 + m_ecc * cosf(ta));
+	glm::vec3 position = {
+		distance * cosf(ta),
+		distance * sinf(ta),
+		0.0f,
+	};
+	position = m_matrix * position;
+
+	return { position.x, position.z, position.y };
 }
 
 glm::vec3 Orbit::getPosition() {

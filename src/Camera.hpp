@@ -16,6 +16,7 @@ public:
 	void updateMatrix();
 	void update(GLFWwindow* window);
 	void zoom(float howMuch);
+	void noFocus();
 
 	glm::mat4 matrix();
 

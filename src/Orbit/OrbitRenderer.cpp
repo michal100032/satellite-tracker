@@ -6,6 +6,9 @@
 #include "../Camera.hpp"
 #include "../consts.hpp"
 
+#include <iostream>
+#include <chrono>
+
 const int ORB_RESOLUTION = 50;
 const char* ORB_VERTSH_PATH = "resources/shaders/line.vert";
 const char* ORB_FRAGSH_PATH = "resources/shaders/line.frag";
@@ -32,6 +35,15 @@ void OrbitRenderer::loadShader() {
 	m_satCameraMatrixUniform = glGetUniformLocation(m_satShader.id(), "cameraMatrix");
 }
 
+void OrbitRenderer::update(std::chrono::utc_clock::time_point time) {
+	m_satPositions[0] = m_orbit->getPositionAt(time);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_satVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(m_satPositions), m_satPositions);
+	glBindBuffer(GL_ARRAY_BUFFER, m_satVBO);
+
+}
+
 void OrbitRenderer::draw() {
 	if (!m_orbit)
 		return;
@@ -41,13 +53,7 @@ void OrbitRenderer::draw() {
 
 	glBindVertexArray(m_orbVAO);
 	glDrawArrays(GL_LINE_LOOP, 0, m_vertices.size());
-	//
-
-	m_satPositions[0] = m_orbit->getPosition();
-	
-	glBindBuffer(GL_ARRAY_BUFFER, m_satVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(m_satPositions), m_satPositions);
-	glBindBuffer(GL_ARRAY_BUFFER, m_satVBO);
+	glBindVertexArray(0);
 
 	m_satShader.use();
 	glUniformMatrix4fv(m_satCameraMatrixUniform, 1, GL_FALSE, glm::value_ptr(Camera::inst().matrix()));
@@ -69,6 +75,7 @@ void OrbitRenderer::setOrbit(Orbit* orbit) {
 
 void OrbitRenderer::generateVertices(Orbit* orb) {
 	glm::mat3 transform = orb->localToSpaceMatrix();
+	m_vertices.clear();
 
 	for (int i = 0; i < ORB_RESOLUTION; i++) {
 		float trueAnomaly = PI * (2 * (float) i / ORB_RESOLUTION - 1);
@@ -131,7 +138,8 @@ void OrbitRenderer::createBuffers(){
 }
 
 void OrbitRenderer::updateBuffer() {
+	std::cout << "v " << m_vertices.size() << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, m_orbVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * ORB_RESOLUTION, &m_vertices);
-	glBindBuffer(GL_ARRAY_BUFFER, m_orbVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * m_vertices.size(), &m_vertices[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

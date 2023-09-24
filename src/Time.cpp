@@ -37,11 +37,34 @@ double Time::getJulianDay(tm& t) {
 	return (double)JDN + ((double)t.tm_hour - 12.0) / 24 + (double)t.tm_min / 1440 + (double)t.tm_sec / 86400;
 }
 
+double Time::getJulianDay(std::chrono::utc_clock::time_point time) {
+	time_t now = std::chrono::system_clock::to_time_t(std::chrono::utc_clock::to_sys(time));
+	return getJulianDay(*gmtime(&now));
+}
+
 double Time::julianDayNow() {
 	tm now = utc();
 	return getJulianDay(now);
 }
 
-double Time::julianSinceEquinox() {
-	return julianDayNow() - 2460024.39201;
+double Time::julianSinceEquinox(std::chrono::utc_clock::time_point time) {
+	return getJulianDay(time) - 2460024.39201;
+}
+
+double Time::gmstFromUtc(std::chrono::utc_clock::time_point utc) {
+	
+	time_t time = std::chrono::system_clock::to_time_t(std::chrono::utc_clock::to_sys(utc));
+	tm gmt = *gmtime(&time);
+
+	double jd = getJulianDay(gmt);
+
+	double ut = jd + 0.5 - truncf(jd + 0.5);
+	jd -= ut;
+	double du = jd - 2451545.0;
+	double Tu = du / 36525;
+
+	double midGmst = 24110.54841 + 8640184.812866 * Tu + 0.093104 * Tu * Tu - 6.2e-6 * Tu * Tu * Tu;
+	double gmst = fmod(midGmst + 86400 * 1.00273790934 * ut, 86400);
+
+	return gmst;
 }

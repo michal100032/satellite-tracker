@@ -12,9 +12,10 @@
 
 Application::Application() {
 	init();
+	m_panel.init(m_window);
 
-	SatelliteInfo info = m_data.load()[18]; // NOAA 18
-
+	m_data.load();
+	SatelliteInfo& info = m_data.get(33591);
 	m_orbit = info.orbit;
 	printf("Name: %s\n", info.name.c_str());
 	printf("SMA:  %f\n", m_orbit.sma());
@@ -24,6 +25,9 @@ Application::Application() {
 	printf("Incl: %f\n", m_orbit.incl() * 180 / PI);
 
 	glfwSetWindowTitle(m_window, ("Satellite tracker | " + info.name).c_str());
+
+	m_panel.setCatalogNumber(info.catalogNumber);
+
 	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double dx, double dy) {
 		Camera::inst().zoom((float)dy);
 	});
@@ -33,7 +37,6 @@ Application::Application() {
 
 	m_orbRenderer.loadShader();
 	m_orbRenderer.setOrbit(&m_orbit);
-
 
 	m_isRunning = true;
 }
@@ -54,22 +57,30 @@ void Application::render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_earth.draw();
-
-	glm::vec3 pos = m_orbit.getPosition();
-
-	glm::mat4 matrix = glm::translate(glm::mat4(1.0f), pos);
-	glUniformMatrix4fv(glGetUniformLocation(m_earth.m_shader.id(), "modelMatrix"), 1, GL_FALSE, glm::value_ptr(matrix));
 	m_orbRenderer.draw();
+	m_panel.draw();
 
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
 }
 
 void Application::update() {
-	m_camera.update(m_window);
-	m_camera.updateMatrix();
-	m_orbit.update(0.0166);
-	m_earth.update(0.0166f);
+	if (m_panel.focused()) {
+		m_camera.noFocus();
+	} else  {
+		m_camera.update(m_window);
+		m_camera.updateMatrix();
+	}
+	if (m_panel.trackedObjectChanged()) {
+		m_orbit = m_data.get(m_panel.catalogNumber()).orbit;
+		m_orbRenderer.setOrbit(&m_orbit);
+	}
+
+	auto time = m_panel.time();
+
+	m_orbRenderer.update(time);
+	m_earth.update(time);
+	m_panel.update();
 
 	int err = glGetError();
 	if (err != 0)
@@ -89,4 +100,5 @@ void Application::init() {
 	glewInit();
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glEnable(GL_DEPTH_TEST);
+	
 }

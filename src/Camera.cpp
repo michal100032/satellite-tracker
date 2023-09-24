@@ -35,7 +35,7 @@ void Camera::update(GLFWwindow* window) {
 		glm::dvec2 mouse;
 		glfwGetCursorPos(window, &mouse.x, &mouse.y);
 
-		if (!m_firstClick) {
+		if (!m_firstClick) {			
 			m_polarPosition.x += (mouse.x - m_previousMousePosition.x) * CAM_DRAG_SPEED;
 			float deltaY = mouse.y - m_previousMousePosition.y;
 			float newY = deltaY * CAM_DRAG_SPEED + m_polarPosition.y;
@@ -49,7 +49,9 @@ void Camera::update(GLFWwindow* window) {
 			m_position.z = m_cameraDistance * sinf(m_polarPosition.x) * cosf(m_polarPosition.y);
 			m_position.y = m_cameraDistance * sinf(m_polarPosition.y);
 		}
-		else m_firstClick = false;
+		else {
+			m_firstClick = false;
+		}
 		m_previousMousePosition = mouse;
 	}
 	else if (!m_firstClick) {
@@ -66,6 +68,10 @@ void Camera::zoom(float howMuch) {
 	m_position.x = m_cameraDistance * cosf(m_polarPosition.x) * cosf(m_polarPosition.y);
 	m_position.z = m_cameraDistance * sinf(m_polarPosition.x) * cosf(m_polarPosition.y);
 	m_position.y = m_cameraDistance * sinf(m_polarPosition.y);
+}
+
+void Camera::noFocus() {
+	m_firstClick = true;
 }
 
 glm::mat4 Camera::matrix() {

@@ -33,18 +33,23 @@ void Earth::loadShader() {
 	m_cameraMatrixUniform = glGetUniformLocation(m_shader.id(), "cameraMatrix");
 }
 
-void Earth::update(float deltaTime) {
-	m_rotation = (Time::gmstNow() - 43082) / 86164 * 2 * PI;
+void Earth::update(std::chrono::utc_clock::time_point time) {
+	m_rotation = (Time::gmstFromUtc(time) - 43082) / 86164 * 2 * PI;
 	m_model = glm::rotate(glm::mat4(1.0f), m_rotation, UP);
+
+	float sunPosAngle = Time::julianSinceEquinox(time) / 365.25f * 2 * PI;
+	float sunLatitude = 23.45f / 180 * PI * sinf(sunPosAngle);
+	m_lightDir = {
+		cosf(sunPosAngle + PI) * cosf(sunLatitude),
+		sinf(sunLatitude),
+		-sinf(sunPosAngle + PI) * cosf(sunLatitude)
+	};
 }
 
 void Earth::draw() {
 	m_shader.use();
 
-	float angle = -Time::julianSinceEquinox() / 365.25f * 2 * PI + PI;
-
-	glUniform3f(m_lightDirUniform, cosf(angle), 0.0f, sinf(angle));
-
+	glUniform3f(m_lightDirUniform, m_lightDir.x, m_lightDir.y, m_lightDir.z);
 	glUniformMatrix4fv(m_modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(m_model));
 	glUniformMatrix4fv(m_cameraMatrixUniform, 1, GL_FALSE, glm::value_ptr(Camera::inst().matrix()));
 
